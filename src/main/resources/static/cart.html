@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .cart-item-row {
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 40px;
+            align-items: center;
+            gap: 1.25rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .cart-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        @media (max-width: 900px) {
+            .checkout-grid { grid-template-columns: 1fr; }
+            .cart-item-row { grid-template-columns: 60px 1fr auto auto; gap: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.5rem 1.5rem 5rem;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem;">Shopping Cart</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Review your items and check your estimated loyalty points rewards.</p>
+
+        <div class="checkout-grid" id="cart-content">
+            <!-- Left Column: Items List -->
+            <div class="card" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                    <h2 style="font-size: 1.3rem;">Items in Your Cart (<span id="cart-count">0</span>)</h2>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="clearFullCart()">Clear Cart</button>
+                </div>
+
+                <div id="cart-items-container">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        Loading cart items...
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <a href="/products.html" class="btn btn-outline btn-sm">&larr; Continue Shopping</a>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary & Points Breakdown -->
+            <div class="order-summary-box">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1.25rem;">Order Summary</h3>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="sum-subtotal">₹0</span>
+                </div>
+
+                <div class="summary-row highlight" id="tier-discount-row" style="display: none;">
+                    <span>Membership Tier Discount (<span id="sum-tier-name">Gold</span>)</span>
+                    <span id="sum-tier-discount">-₹0</span>
+                </div>
+
+                <div class="summary-row highlight" id="coupon-discount-row" style="display: none;">
+                    <span>Reward Coupon Discount</span>
+                    <span id="sum-coupon-discount">-₹0</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Delivery Charge</span>
+                    <span id="sum-delivery">₹0</span>
+                </div>
+
+                <!-- Coupon Input Box -->
+                <div style="margin: 1.5rem 0; padding: 1.25rem; background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    <label class="form-label" style="display: flex; justify-content: space-between;">
+                        <span>Apply Reward Coupon</span>
+                        <a href="/my-rewards.html" style="font-size: 0.8rem;">View My Coupons &rarr;</a>
+                    </label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="coupon-input" class="form-control" placeholder="Enter coupon code (e.g. LOYAL100)" style="text-transform: uppercase;">
+                        <button type="button" class="btn btn-secondary" onclick="applyCoupon()">Apply</button>
+                    </div>
+                    <div id="coupon-msg" style="font-size: 0.825rem; margin-top: 0.5rem; display: none;"></div>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Final Total</span>
+                    <span id="sum-total">₹0</span>
+                </div>
+
+                <!-- Estimated Points Badge -->
+                <div class="estimated-points-box">
+                    <div class="points-icon">⭐</div>
+                    <div>
+                        <h4 id="sum-estimated-points">0 Points</h4>
+                        <p>Estimated loyalty points earned (~10% of final order value).</p>
+                    </div>
+                </div>
+
+                <a href="/checkout.html" class="btn btn-primary btn-block btn-lg" id="checkout-btn" style="margin-top: 1rem;">
+                    Proceed to Checkout &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/cart.js"></script>
+</body>
+</html>

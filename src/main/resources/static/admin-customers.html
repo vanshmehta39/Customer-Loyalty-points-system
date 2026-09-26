@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management - Admin Portal</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <span style="font-size: 1.5rem;">🛡️</span>
+                <div>Admin<span>Hub</span></div>
+            </div>
+
+            <ul class="admin-nav">
+                <li class="admin-nav-item"><a href="/admin-dashboard.html">📊 Overview Analytics</a></li>
+                <li class="admin-nav-item"><a href="/admin-customers.html" class="active">👥 Customer Directory</a></li>
+                <li class="admin-nav-item"><a href="/admin-products.html">🛍️ Product Catalog</a></li>
+                <li class="admin-nav-item"><a href="/admin-rewards.html">🎁 Loyalty Rewards</a></li>
+                <li class="admin-nav-item"><a href="/admin-notifications.html">📢 Broadcast Alerts</a></li>
+            </ul>
+
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <a href="/dashboard.html" class="btn btn-outline btn-block btn-sm" style="margin-bottom: 0.5rem;">⭐ Customer View</a>
+                <button type="button" class="btn btn-danger btn-block btn-sm" onclick="Auth.logout()">🚪 Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <h2 style="font-size: 1.35rem;">Customer Directory & Loyalty Accounts</h2>
+                <div class="admin-search-input">
+                    <input type="text" id="cust-search" class="form-control" placeholder="Search customer by name or email..." oninput="handleSearch(this.value)">
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer Name</th>
+                                    <th>Email</th>
+                                    <th>Tier</th>
+                                    <th>Points Balance</th>
+                                    <th>Total Spent</th>
+                                    <th>Referral Code</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customers-tbody">
+                                <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">Loading customers...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Customer Details Modal -->
+    <div class="modal-overlay" id="customer-modal">
+        <div class="modal-content" style="max-width: 750px;">
+            <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modal-body">
+                Loading details...
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let searchTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireAuth('ADMIN')) return;
+            await loadCustomers();
+        });
+
+        async function loadCustomers(query = '') {
+            const tbody = document.getElementById('customers-tbody');
+            try {
+                let url = '/admin/customers';
+                if (query) url += `?query=${encodeURIComponent(query)}`;
+                const res = await apiRequest(url);
+
+                if (!res.success || !res.data || res.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">No customers found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.data.map(c => `
+                    <tr>
+                        <td style="color: var(--text-muted);">#${c.id}</td>
+                        <td style="font-weight: 700; color: #fff;">${escapeHtml(c.fullName)}</td>
+                        <td style="color: var(--text-secondary);">${escapeHtml(c.email)}</td>
+                        <td><span class="badge badge-${(c.tier || 'Bronze').toLowerCase()}">${c.tier || 'Bronze'}</span></td>
+                        <td style="font-weight: 800; color: #fbbf24;">⭐ ${c.pointsBalance}</td>
+                        <td style="font-weight: 600; color: #34d399;">${formatINR(c.totalSpent)}</td>
+                        <td style="font-family: monospace; color: var(--text-secondary);">${c.referralCode || '—'}</td>
+                        <td>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="viewCustomer(${c.id})">
+                                Inspect Details
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger); padding: 2rem;">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function handleSearch(val) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadCustomers(val.trim());
+            }, 300);
+        }
+
+        async function viewCustomer(id) {
+            const modal = document.getElementById('customer-modal');
+            const body = document.getElementById('modal-body');
+            modal.classList.add('active');
+            body.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading customer history...</div>`;
+
+            try {
+                const res = await apiRequest(`/admin/customers/${id}`);
+                if (!res.success || !res.data) {
+                    body.innerHTML = `<div style="color: var(--danger);">Failed to load customer profile.</div>`;
+                    return;
+                }
+
+                const d = res.data;
+                const u = d.user;
+                const tier = d.tier;
+
+                body.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                        <div>
+                            <h2 style="font-size: 1.5rem; color: #fff;">${escapeHtml(u.fullName)}</h2>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem;">${escapeHtml(u.email)} &bull; ${u.phone || 'No phone'} &bull; ${u.city || 'No city'}</p>
+                        </div>
+                        <span class="badge badge-${tier.name.toLowerCase()}" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">${tier.icon} ${tier.name} Tier</span>
+                    </div>
+
+                    <div class="grid-3" style="margin-bottom: 1.5rem;">
+                        <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-md);">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Points Balance</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: #fbbf24;">${u.pointsBalance} pts</div>
+                        </div>
+                        <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-md);">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total Spent</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: #34d399;">${formatINR(u.totalSpent)}</div>
+                        </div>
+                        <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-md);">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Orders Completed</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: #38bdf8;">${d.orders.length}</div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 1.05rem; margin-bottom: 0.75rem;">Recent Order History</h4>
+                    <div style="max-height: 180px; overflow-y: auto; margin-bottom: 1.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <table class="data-table">
+                            <thead><tr><th>Order #</th><th>Date</th><th>Amount</th><th>Points Earned</th></tr></thead>
+                            <tbody>
+                                ${d.orders.length > 0 ? d.orders.map(o => `
+                                    <tr>
+                                        <td>${o.orderNumber}</td>
+                                        <td>${formatDate(o.createdAt)}</td>
+                                        <td>${formatINR(o.finalAmount)}</td>
+                                        <td style="color: #fbbf24; font-weight: 700;">+${o.pointsEarned}</td>
+                                    </tr>
+                                `).join('') : `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No orders placed yet.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="font-size: 1.05rem; margin-bottom: 0.75rem;">Recent Points Transactions</h4>
+                    <div style="max-height: 180px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <table class="data-table">
+                            <thead><tr><th>Date</th><th>Description</th><th>Points</th><th>Balance After</th></tr></thead>
+                            <tbody>
+                                ${d.transactions.length > 0 ? d.transactions.map(tx => `
+                                    <tr>
+                                        <td>${formatDate(tx.createdAt)}</td>
+                                        <td>${escapeHtml(tx.description)}</td>
+                                        <td><span class="points-pill ${tx.points > 0 ? 'positive' : 'negative'}">${tx.points > 0 ? '+' : ''}${tx.points}</span></td>
+                                        <td>${tx.balanceAfter} pts</td>
+                                    </tr>
+                                `).join('') : `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No transactions recorded.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+            } catch (err) {
+                body.innerHTML = `<div style="color: var(--danger);">Error: ${err.message}</div>`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('customer-modal').classList.remove('active');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

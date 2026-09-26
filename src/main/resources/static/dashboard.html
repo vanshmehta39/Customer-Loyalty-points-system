@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.25rem 0 4rem;">
+        <div class="welcome-banner">
+            <div class="welcome-info">
+                <p class="eyebrow">Welcome back</p>
+                <h1>Good to see you, <span id="dash-customer-name">Customer</span>.</h1>
+                <p>Track your balance, loyalty tier, and recent activity in one place.</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center; z-index: 2; flex-wrap: wrap;">
+                <button type="button" class="btn btn-accent btn-sm" id="birthday-btn" onclick="claimBirthdayBonus()" style="display: none;">
+                    Claim Birthday Bonus
+                </button>
+                <a href="/profile.html" class="btn btn-outline btn-sm">My Profile</a>
+            </div>
+        </div>
+
+        <div class="grid-5" style="margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Current Points</span>
+                    <div class="stat-card-icon" style="color: var(--warning);">P</div>
+                </div>
+                <div class="stat-card-value" id="stat-points">0</div>
+                <div class="stat-card-sub">Available to spend</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Membership</span>
+                    <div class="stat-card-icon" id="stat-tier-icon">G</div>
+                </div>
+                <div class="stat-card-value" id="stat-tier" style="font-size: 1.6rem;">Bronze</div>
+                <div class="stat-card-sub" id="stat-tier-perk">Basic benefits</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total Spent</span>
+                    <div class="stat-card-icon" style="color: var(--primary);">₹</div>
+                </div>
+                <div class="stat-card-value" id="stat-spent" style="font-size: 1.5rem;">₹0</div>
+                <div class="stat-card-sub">Lifetime orders</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Lifetime Points</span>
+                    <div class="stat-card-icon" style="color: var(--success);">L</div>
+                </div>
+                <div class="stat-card-value" id="stat-lifetime">0</div>
+                <div class="stat-card-sub">Total earned</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Redeemed</span>
+                    <div class="stat-card-icon" style="color: var(--danger);">R</div>
+                </div>
+                <div class="stat-card-value" id="stat-redeemed">0</div>
+                <div class="stat-card-sub">Used for rewards</div>
+            </div>
+        </div>
+
+        <div class="membership-card">
+            <div class="membership-card-top">
+                <div class="membership-tier-title">
+                    <span class="tier-icon" id="prog-tier-icon">G</span>
+                    <div>
+                        <div class="membership-label">Current Membership</div>
+                        <h3 id="prog-tier-name">Gold Member</h3>
+                    </div>
+                </div>
+                <div class="membership-points-count">
+                    <div class="points-num"><span id="prog-current-points">750</span> <span class="points-unit">Points</span></div>
+                </div>
+            </div>
+
+            <div class="progress-header">
+                <div><span id="prog-points-needed">250 points</span> to reach <strong id="prog-next-tier">Platinum</strong></div>
+                <div id="prog-percent-label">75%</div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="tier-progress-fill" style="width: 75%;"></div>
+            </div>
+
+            <div class="membership-meta">
+                <span id="prog-tier-start">500 pts (Gold)</span>
+                <span id="prog-tier-end">1000 pts (Platinum)</span>
+            </div>
+        </div>
+
+        <div class="quick-actions-bar">
+            <a href="/products.html" class="btn btn-primary btn-lg" id="btn-start-shopping">Start Shopping</a>
+            <a href="/rewards.html" class="btn btn-accent btn-lg" id="btn-redeem-rewards">Redeem Rewards</a>
+            <a href="/points-history.html" class="btn btn-secondary btn-lg" id="btn-view-points">Points History</a>
+            <a href="/my-rewards.html" class="btn btn-outline btn-lg" id="btn-my-coupons">My Rewards</a>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Activity</div>
+                    <a href="/points-history.html" class="btn btn-outline btn-sm">View all</a>
+                </div>
+
+                <div class="activity-list" id="recent-activity-list">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading points activity...</div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Recommended Rewards</div>
+                        <a href="/rewards.html" class="btn btn-outline btn-sm">Explore</a>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="recommended-rewards-grid">
+                        <div style="grid-column: span 2; text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading rewards...</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Notifications</div>
+                        <a href="/notifications.html" class="btn btn-outline btn-sm">View all</a>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="recent-notifications-list">
+                        <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">Loading notifications...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

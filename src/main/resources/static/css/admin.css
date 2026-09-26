@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Admin Panel CSS
+   ========================================================================== */
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 260px;
+    background: #0f172a;
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.admin-brand span {
+    color: var(--accent);
+}
+
+.admin-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.admin-nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+}
+
+.admin-nav-item a:hover,
+.admin-nav-item a.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+}
+
+.admin-main {
+    flex: 1;
+    background: var(--bg-main);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.admin-topbar {
+    height: 70px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-content {
+    padding: 2rem;
+    flex: 1;
+}
+
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+}
+
+.admin-stat-card .label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+}
+
+.admin-stat-card .value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    color: #fff;
+}
+
+.admin-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.admin-search-input {
+    min-width: 280px;
+}

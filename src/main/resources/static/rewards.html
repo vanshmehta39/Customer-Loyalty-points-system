@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards Store - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .reward-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .reward-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .reward-points-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.5rem 1.5rem 5rem;">
+        <!-- Header Banner with Customer Points Balance -->
+        <div class="welcome-banner" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(79, 70, 229, 0.1)); border-color: rgba(245, 158, 11, 0.3);">
+            <div>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem;">Rewards Catalog</h1>
+                <p style="color: var(--text-secondary);">Redeem your accumulated loyalty points for store discounts and vouchers.</p>
+            </div>
+            <div style="text-align: right; background: rgba(0, 0, 0, 0.3); padding: 1rem 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Your Available Balance</div>
+                <div style="font-size: 2rem; font-weight: 800; color: #fbbf24; font-family: var(--font-heading);">
+                    ⭐ <span id="rewards-balance">0</span> pts
+                </div>
+                <a href="/my-rewards.html" style="font-size: 0.85rem; color: var(--primary-light);">View My Active Coupons &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Rewards Grid -->
+        <div class="grid-4" id="rewards-catalog-grid">
+            <div style="grid-column: span 4; text-align: center; padding: 4rem; color: var(--text-muted);">
+                Loading available rewards...
+            </div>
+        </div>
+    </div>
+
+    <!-- Redemption Success Modal -->
+    <div class="modal-overlay" id="redeem-modal">
+        <div class="modal-content" style="text-align: center;">
+            <button type="button" class="modal-close" onclick="closeRedeemModal()">&times;</button>
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+            <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem;">Reward Redeemed!</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                Your points have been deducted and your unique discount coupon code is generated.
+            </p>
+
+            <div style="background: var(--bg-surface-elevated); border: 2px dashed #4f46e5; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Your Coupon Code</div>
+                <div style="font-size: 1.75rem; font-weight: 800; color: #fff; letter-spacing: 2px; margin: 0.5rem 0;" id="modal-coupon-code">
+                    LOYAL100-XXXXX
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copyCouponCode()">
+                    📋 Copy Code
+                </button>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/cart.html" class="btn btn-primary" onclick="useInCart()">
+                    🛒 Apply in Cart Now
+                </a>
+                <button type="button" class="btn btn-outline" onclick="closeRedeemModal()">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        let currentPointsBalance = 0;
+        let lastRedeemedCode = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireAuth('CUSTOMER')) return;
+            const user = Auth.getUser();
+
+            await loadUserBalance(user.id);
+            await loadRewardsCatalog();
+        });
+
+        async function loadUserBalance(userId) {
+            try {
+                const res = await apiRequest(`/customer/profile?userId=${userId}`);
+                if (res.success && res.data) {
+                    currentPointsBalance = res.data.pointsBalance || 0;
+                    document.getElementById('rewards-balance').textContent = currentPointsBalance.toLocaleString();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadRewardsCatalog() {
+            const grid = document.getElementById('rewards-catalog-grid');
+            try {
+                const res = await apiRequest('/rewards');
+                if (!res.success || !res.data) {
+                    grid.innerHTML = `<div style="grid-column: span 4; text-align: center; color: var(--danger);">Failed to load rewards.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = res.data.map(r => {
+                    const canAfford = currentPointsBalance >= r.pointsRequired;
+                    const diff = r.pointsRequired - currentPointsBalance;
+
+                    return `
+                        <div class="reward-card">
+                            <div>
+                                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">${r.icon || '🎁'}</div>
+                                <div class="reward-points-badge">
+                                    ⭐ ${r.pointsRequired} Points
+                                </div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">
+                                    ${escapeHtml(r.name)}
+                                </h3>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1.5rem;">
+                                    ${escapeHtml(r.description)}
+                                </p>
+                            </div>
+
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                                    Valid for ${r.expiryDays || 30} days after redemption
+                                </div>
+                                <button type="button" 
+                                        class="btn ${canAfford ? 'btn-primary' : 'btn-secondary'} btn-block"
+                                        ${!canAfford ? 'disabled' : ''}
+                                        onclick="handleRedeem(${r.id}, '${escapeHtml(r.name)}', ${r.pointsRequired})">
+                                    ${canAfford ? 'Redeem Voucher' : `Need ${diff} more pts`}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                grid.innerHTML = `<div style="grid-column: span 4; text-align: center; color: var(--danger);">Error: ${err.message}</div>`;
+            }
+        }
+
+        async function handleRedeem(rewardId, rewardName, pointsRequired) {
+            if (!confirm(`Redeem "${rewardName}" for ${pointsRequired} loyalty points?`)) return;
+
+            const user = Auth.getUser();
+            try {
+                const res = await apiRequest(`/rewards/redeem?userId=${user.id}`, 'POST', { rewardId });
+                if (res.success && res.data) {
+                    lastRedeemedCode = res.data.couponCode;
+                    document.getElementById('modal-coupon-code').textContent = lastRedeemedCode;
+                    document.getElementById('redeem-modal').classList.add('active');
+
+                    // Refresh balance and UI
+                    await loadUserBalance(user.id);
+                    await loadRewardsCatalog();
+                    syncLiveNavState(user.id);
+                }
+            } catch (err) {
+                showToast(err.message || 'Redemption failed.', 'error');
+            }
+        }
+
+        function closeRedeemModal() {
+            document.getElementById('redeem-modal').classList.remove('active');
+        }
+
+        function copyCouponCode() {
+            navigator.clipboard.writeText(lastRedeemedCode);
+            showToast('Coupon code copied to clipboard! 📋');
+        }
+
+        function useInCart() {
+            sessionStorage.setItem('appliedCoupon', lastRedeemedCode);
+            window.location.href = '/cart.html';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

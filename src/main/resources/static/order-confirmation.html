@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .confirmation-card {
+            max-width: 650px;
+            margin: 3.5rem auto;
+            text-align: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-xl);
+        }
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #10b981;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .points-reward-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(79, 70, 229, 0.15));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1.75rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="success-checkmark">✓</div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Order Placed Successfully!</h1>
+            <p style="color: var(--text-secondary); font-size: 1rem;">
+                Thank you for your purchase. Your simulated payment was completed and processed.
+            </p>
+
+            <!-- Loyalty Points Earned Showcase Banner -->
+            <div class="points-reward-banner">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ⭐ Loyalty Points Earned (10% Formula)
+                </div>
+                <div style="font-size: 2.5rem; font-weight: 800; font-family: var(--font-heading); color: #fff; margin: 0.35rem 0;">
+                    +<span id="conf-points-earned">0</span> Points
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                    Your updated points balance is now <strong style="color: #fbbf24;" id="conf-new-balance">0</strong> points.
+                </div>
+            </div>
+
+            <!-- Tier Upgrade Celebration Alert (if triggered) -->
+            <div id="conf-tier-upgrade-alert" style="display: none; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: center; color: #c084fc;">
+                <span id="conf-tier-msg">🎉 Congratulations! You have reached a higher membership level!</span>
+            </div>
+
+            <!-- Order Meta details -->
+            <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem; text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <span style="color: var(--text-secondary);">Order Number:</span>
+                    <strong style="color: #fff;" id="conf-order-num">-</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <span style="color: var(--text-secondary);">Final Amount Paid:</span>
+                    <strong style="color: #fff;" id="conf-final-amount">₹0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span style="color: var(--text-secondary);">Current Membership Level:</span>
+                    <strong style="color: #38bdf8;" id="conf-tier-name">Gold</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/points-history.html" class="btn btn-secondary btn-lg">
+                    📜 View Points Ledger
+                </a>
+                <a href="/dashboard.html" class="btn btn-primary btn-lg">
+                    ⭐ Back to Dashboard
+                </a>
+                <a href="/products.html" class="btn btn-outline btn-lg">
+                    🛍️ Continue Shopping
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const raw = sessionStorage.getItem('lastCompletedOrder');
+            if (!raw) {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+
+            const data = JSON.parse(raw);
+
+            document.getElementById('conf-order-num').textContent = data.orderNumber;
+            document.getElementById('conf-final-amount').textContent = formatINR(data.finalAmount);
+            document.getElementById('conf-points-earned').textContent = data.pointsEarned;
+            document.getElementById('conf-new-balance').textContent = data.newPointsBalance;
+            document.getElementById('conf-tier-name').textContent = data.currentTier;
+
+            if (data.upgradedTier) {
+                const alert = document.getElementById('conf-tier-upgrade-alert');
+                alert.style.display = 'block';
+                if (data.tierUpgradeMessage) {
+                    document.getElementById('conf-tier-msg').textContent = data.tierUpgradeMessage;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

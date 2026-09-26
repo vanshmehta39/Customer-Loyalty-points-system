@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <style>
+        .payment-option-card {
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface-elevated);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+        .payment-option-card:hover, .payment-option-card.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.5rem 1.5rem 5rem;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem;">Checkout & Simulation</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Confirm your order details and see your loyalty points in real-time.</p>
+
+        <form id="checkout-form">
+            <div class="checkout-grid">
+                <!-- Left: Shipping & Payment Method -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Shipping Address -->
+                    <div class="card">
+                        <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem;">1. Shipping Information</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="ship-name">Recipient Full Name *</label>
+                            <input type="text" id="ship-name" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="ship-address">Street Address *</label>
+                            <textarea id="ship-address" class="form-control" rows="3" placeholder="Apartment / Flat, Street, Area" required></textarea>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" for="ship-city">City *</label>
+                                <input type="text" id="ship-city" class="form-control" placeholder="e.g. Mumbai" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="ship-phone">Contact Phone *</label>
+                                <input type="tel" id="ship-phone" class="form-control" placeholder="+91 98765 43210" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Simulation -->
+                    <div class="card">
+                        <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">2. Payment Method (Simulation)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                            Choose your preferred payment gateway simulation. No real money will be charged.
+                        </p>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="payment-options">
+                            <label class="payment-option-card active">
+                                <input type="radio" name="paymentMethod" value="UPI Instant Simulation" checked>
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">⚡ UPI Instant Simulation</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">GPay, PhonePe, Paytm, or BHIM UPI</div>
+                                </div>
+                            </label>
+
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="Credit/Debit Card Simulation">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">💳 Credit / Debit Card Simulation</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Visa, Mastercard, RuPay & Amex</div>
+                                </div>
+                            </label>
+
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="Net Banking Simulation">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">🏛️ Net Banking Simulation</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">HDFC, ICICI, SBI, Axis and 50+ banks</div>
+                                </div>
+                            </label>
+
+                            <label class="payment-option-card">
+                                <input type="radio" name="paymentMethod" value="Cash On Delivery">
+                                <div>
+                                    <div style="font-weight: 700; color: #fff;">💵 Cash on Delivery</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Pay at doorstep upon delivery</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary Confirmation -->
+                <div class="order-summary-box">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1.25rem;">Order Review</h3>
+
+                    <!-- Mini Cart List -->
+                    <div id="checkout-items-preview" style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                        <!-- Injected dynamically -->
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Items Subtotal</span>
+                        <span id="chk-subtotal">₹0</span>
+                    </div>
+
+                    <div class="summary-row highlight" id="chk-tier-discount-row" style="display: none;">
+                        <span>Tier Discount (<span id="chk-tier-name">Gold</span>)</span>
+                        <span id="chk-tier-discount">-₹0</span>
+                    </div>
+
+                    <div class="summary-row highlight" id="chk-coupon-discount-row" style="display: none;">
+                        <span>Coupon Discount (<span id="chk-coupon-code"></span>)</span>
+                        <span id="chk-coupon-discount">-₹0</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <span id="chk-delivery">₹0</span>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>Total Payable</span>
+                        <span id="chk-total">₹0</span>
+                    </div>
+
+                    <!-- Highlighted Points to be Earned -->
+                    <div class="estimated-points-box" style="margin-top: 1.25rem;">
+                        <div class="points-icon">⭐</div>
+                        <div>
+                            <h4 id="chk-points-earned">0 Points</h4>
+                            <p>Points earned = purchase total × 10% calculated strictly by the Java backend!</p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" id="place-order-btn" style="margin-top: 1.5rem;">
+                        🔒 Place Order & Earn Points
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/checkout.js"></script>
+</body>
+</html>

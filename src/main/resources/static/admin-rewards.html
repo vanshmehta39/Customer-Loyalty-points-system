@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards Management - Admin Portal</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <span style="font-size: 1.5rem;">🛡️</span>
+                <div>Admin<span>Hub</span></div>
+            </div>
+
+            <ul class="admin-nav">
+                <li class="admin-nav-item"><a href="/admin-dashboard.html">📊 Overview Analytics</a></li>
+                <li class="admin-nav-item"><a href="/admin-customers.html">👥 Customer Directory</a></li>
+                <li class="admin-nav-item"><a href="/admin-products.html">🛍️ Product Catalog</a></li>
+                <li class="admin-nav-item"><a href="/admin-rewards.html" class="active">🎁 Loyalty Rewards</a></li>
+                <li class="admin-nav-item"><a href="/admin-notifications.html">📢 Broadcast Alerts</a></li>
+            </ul>
+
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <a href="/dashboard.html" class="btn btn-outline btn-block btn-sm" style="margin-bottom: 0.5rem;">⭐ Customer View</a>
+                <button type="button" class="btn btn-danger btn-block btn-sm" onclick="Auth.logout()">🚪 Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <h2 style="font-size: 1.35rem;">Loyalty Rewards & Voucher Configuration</h2>
+                <button type="button" class="btn btn-primary" onclick="openCreateRewardModal()">
+                    ➕ Add New Reward
+                </button>
+            </header>
+
+            <div class="admin-content">
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Icon / Name</th>
+                                    <th>Points Required</th>
+                                    <th>Reward Type</th>
+                                    <th>Reward Value</th>
+                                    <th>Expiry (Days)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-rewards-tbody">
+                                <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">Loading rewards catalog...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Reward Modal -->
+    <div class="modal-overlay" id="reward-modal">
+        <div class="modal-content" style="max-width: 550px;">
+            <button type="button" class="modal-close" onclick="closeRewardModal()">&times;</button>
+            <h3 style="font-size: 1.4rem; margin-bottom: 1.5rem;" id="modal-reward-title">Configure Reward</h3>
+
+            <form id="reward-form">
+                <input type="hidden" id="rew-id">
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="rew-name">Reward Name *</label>
+                        <input type="text" id="rew-name" class="form-control" placeholder="e.g. ₹150 OFF Voucher" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="rew-icon">Emoji Icon</label>
+                        <input type="text" id="rew-icon" class="form-control" placeholder="🏷️" value="🎁">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="rew-points">Points Required *</label>
+                        <input type="number" min="1" id="rew-points" class="form-control" placeholder="300" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="rew-type">Reward Type *</label>
+                        <select id="rew-type" class="form-control" required>
+                            <option value="FLAT_DISCOUNT">Flat Discount (₹)</option>
+                            <option value="PERCENT_DISCOUNT">Percentage Discount (%)</option>
+                            <option value="FREE_DELIVERY">Free Delivery</option>
+                            <option value="GIFT_VOUCHER">Gift Voucher (₹)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="rew-value">Reward Value *</label>
+                        <input type="number" step="0.5" min="0" id="rew-value" class="form-control" placeholder="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="rew-expiry">Coupon Validity (Days)</label>
+                        <input type="number" min="1" id="rew-expiry" class="form-control" value="30">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="rew-desc">Description</label>
+                    <textarea id="rew-desc" class="form-control" rows="3" placeholder="Explain the benefit of this reward..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" onclick="closeRewardModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="save-reward-btn">Save Reward</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let allRewards = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireAuth('ADMIN')) return;
+            await loadAdminRewards();
+
+            document.getElementById('reward-form').addEventListener('submit', handleSaveReward);
+        });
+
+        async function loadAdminRewards() {
+            const tbody = document.getElementById('admin-rewards-tbody');
+            try {
+                const res = await apiRequest('/admin/rewards');
+                if (!res.success || !res.data) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger); padding: 2rem;">Failed to load rewards.</td></tr>`;
+                    return;
+                }
+
+                allRewards = res.data;
+                tbody.innerHTML = allRewards.map(r => `
+                    <tr>
+                        <td style="color: var(--text-muted);">#${r.id}</td>
+                        <td style="font-weight: 700; color: #fff;">
+                            <span style="font-size: 1.25rem; margin-right: 0.35rem;">${r.icon || '🎁'}</span>
+                            ${escapeHtml(r.name)}
+                        </td>
+                        <td style="font-weight: 800; color: #fbbf24;">⭐ ${r.pointsRequired} pts</td>
+                        <td><span class="badge badge-primary">${r.rewardType}</span></td>
+                        <td style="font-weight: 700; color: #34d399;">
+                            ${r.rewardType === 'PERCENT_DISCOUNT' ? r.rewardValue + '%' : formatINR(r.rewardValue)}
+                        </td>
+                        <td>${r.expiryDays || 30} days</td>
+                        <td>
+                            <span class="badge ${r.active ? 'badge-success' : 'badge-danger'}">
+                                ${r.active ? 'ACTIVE' : 'INACTIVE'}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="openEditRewardModal(${r.id})">Edit</button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="toggleReward(${r.id})">
+                                    ${r.active ? 'Deactivate' : 'Activate'}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger); padding: 2rem;">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function openCreateRewardModal() {
+            document.getElementById('modal-reward-title').textContent = 'Add New Reward';
+            document.getElementById('reward-form').reset();
+            document.getElementById('rew-id').value = '';
+            document.getElementById('reward-modal').classList.add('active');
+        }
+
+        function openEditRewardModal(id) {
+            const r = allRewards.find(x => x.id === id);
+            if (!r) return;
+
+            document.getElementById('modal-reward-title').textContent = 'Edit Reward';
+            document.getElementById('rew-id').value = r.id;
+            document.getElementById('rew-name').value = r.name;
+            document.getElementById('rew-icon').value = r.icon || '🎁';
+            document.getElementById('rew-points').value = r.pointsRequired;
+            document.getElementById('rew-type').value = r.rewardType;
+            document.getElementById('rew-value').value = r.rewardValue;
+            document.getElementById('rew-expiry').value = r.expiryDays || 30;
+            document.getElementById('rew-desc').value = r.description || '';
+
+            document.getElementById('reward-modal').classList.add('active');
+        }
+
+        function closeRewardModal() {
+            document.getElementById('reward-modal').classList.remove('active');
+        }
+
+        async function handleSaveReward(e) {
+            e.preventDefault();
+            const id = document.getElementById('rew-id').value;
+            const name = document.getElementById('rew-name').value.trim();
+            const icon = document.getElementById('rew-icon').value.trim();
+            const pointsRequired = parseInt(document.getElementById('rew-points').value);
+            const rewardType = document.getElementById('rew-type').value;
+            const rewardValue = parseFloat(document.getElementById('rew-value').value);
+            const expiryDays = parseInt(document.getElementById('rew-expiry').value) || 30;
+            const description = document.getElementById('rew-desc').value.trim();
+
+            const payload = { name, icon, pointsRequired, rewardType, rewardValue, expiryDays, description, active: true };
+
+            try {
+                if (id) {
+                    await apiRequest(`/admin/rewards/${id}`, 'PUT', payload);
+                    showToast('Reward updated successfully!');
+                } else {
+                    await apiRequest('/admin/rewards', 'POST', payload);
+                    showToast('Reward created successfully!');
+                }
+                closeRewardModal();
+                await loadAdminRewards();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function toggleReward(id) {
+            try {
+                await apiRequest(`/admin/rewards/${id}/toggle`, 'PATCH');
+                showToast('Reward status toggled.');
+                await loadAdminRewards();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

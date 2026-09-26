@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Points History - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.5rem 1.5rem 5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+            <div>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem;">Points Transaction Ledger</h1>
+                <p style="color: var(--text-secondary);">Comprehensive history of all points earned, bonuses credited, and rewards redeemed.</p>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <label for="type-filter" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Filter by Activity:</label>
+                <select id="type-filter" class="form-control" style="width: auto; padding: 0.5rem 2rem 0.5rem 1rem;" onchange="filterHistory()">
+                    <option value="ALL">All Transactions</option>
+                    <option value="PURCHASE">Purchases (+10%)</option>
+                    <option value="REWARD_REDEMPTION">Reward Redemptions</option>
+                    <option value="BONUS">Bonuses & Referral</option>
+                    <option value="REVIEW_BONUS">Review Bonuses</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Activity / Description</th>
+                            <th>Order Ref / Amount</th>
+                            <th>Points</th>
+                            <th>Type</th>
+                            <th>Balance After</th>
+                        </tr>
+                    </thead>
+                    <tbody id="points-history-tbody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                Loading points transaction ledger...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        let allTransactions = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireAuth('CUSTOMER')) return;
+            const user = Auth.getUser();
+
+            try {
+                const res = await apiRequest(`/customer/points-history?userId=${user.id}`);
+                if (res.success && res.data) {
+                    allTransactions = res.data;
+                    renderHistory(allTransactions);
+                }
+            } catch (err) {
+                document.getElementById('points-history-tbody').innerHTML = `
+                    <tr><td colspan="6" style="text-align: center; color: var(--danger); padding: 2rem;">Error: ${err.message}</td></tr>
+                `;
+            }
+        });
+
+        function renderHistory(items) {
+            const tbody = document.getElementById('points-history-tbody');
+            if (!items || items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            No transactions found matching criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = items.map(tx => {
+                const isPos = tx.points > 0;
+                let badgeClass = 'badge-primary';
+                let typeLabel = tx.transactionType;
+
+                if (tx.transactionType === 'PURCHASE') {
+                    badgeClass = 'badge-success';
+                    typeLabel = 'Purchase Earned';
+                } else if (tx.transactionType === 'REWARD_REDEMPTION') {
+                    badgeClass = 'badge-danger';
+                    typeLabel = 'Redeemed';
+                } else if (tx.transactionType.includes('BONUS')) {
+                    badgeClass = 'badge-gold';
+                    typeLabel = 'Bonus Points';
+                } else if (tx.transactionType === 'REFERRAL') {
+                    badgeClass = 'badge-platinum';
+                    typeLabel = 'Referral Bonus';
+                }
+
+                return `
+                    <tr>
+                        <td style="color: var(--text-secondary);">${formatDate(tx.createdAt)}</td>
+                        <td style="font-weight: 600; color: #fff;">${escapeHtml(tx.description)}</td>
+                        <td style="color: var(--text-secondary);">${tx.order ? 'Order #' + tx.order.id : '—'}</td>
+                        <td>
+                            <span class="points-pill ${isPos ? 'positive' : 'negative'}">
+                                ${isPos ? '+' : ''}${tx.points}
+                            </span>
+                        </td>
+                        <td><span class="badge ${badgeClass}">${typeLabel}</span></td>
+                        <td style="font-weight: 700; color: #fbbf24;">${tx.balanceAfter} pts</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterHistory() {
+            const filter = document.getElementById('type-filter').value;
+            if (filter === 'ALL') {
+                renderHistory(allTransactions);
+            } else if (filter === 'BONUS') {
+                renderHistory(allTransactions.filter(t => t.transactionType.includes('BONUS') || t.transactionType === 'REFERRAL'));
+            } else {
+                renderHistory(allTransactions.filter(t => t.transactionType === filter));
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>

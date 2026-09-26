@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Profile - LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="container" style="padding: 2.5rem 1.5rem 5rem; max-width: 1050px;">
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.35rem;">Customer Account & Loyalty Profile</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Manage your personal details and view your membership status.</p>
+
+        <!-- Referral Bonus Feature Card -->
+        <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.18), rgba(6, 182, 212, 0.12)); border: 1px solid rgba(99, 102, 241, 0.35); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+            <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase;">🤝 Refer a Friend Program</div>
+                <h3 style="font-size: 1.35rem; color: #fff; margin: 0.25rem 0;">Share your code and earn <span style="color: #fbbf24;">+150 Points</span> for each referral!</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">When a new member registers using your unique code, 150 points are immediately added to your balance.</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center; background: #0f172a; padding: 0.6rem 1rem; border-radius: var(--radius-md); border: 1px dashed #6366f1;">
+                <span style="font-family: monospace; font-size: 1.25rem; font-weight: 800; color: #fff;" id="profile-ref-code">LOYAL-XXXX</span>
+                <button type="button" class="btn btn-primary btn-sm" onclick="copyReferralCode()">Copy Code</button>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Left: Personal Information Form -->
+            <div class="card">
+                <h3 style="font-size: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>👤</span> Personal Information
+                </h3>
+
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label class="form-label" for="prof-name">Full Name *</label>
+                        <input type="text" id="prof-name" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prof-email">Email Address (Read-only)</label>
+                        <input type="email" id="prof-email" class="form-control" readonly style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="prof-phone">Phone Number</label>
+                            <input type="tel" id="prof-phone" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="prof-city">City</label>
+                            <input type="text" id="prof-city" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prof-dob">Date of Birth</label>
+                        <input type="date" id="prof-dob" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="save-profile-btn">
+                        Save Personal Details
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Column: Loyalty Overview & Change Password -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Loyalty Overview -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>⭐</span> Loyalty Status
+                    </h3>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.95rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Current Tier:</span>
+                            <strong style="color: #fbbf24;" id="prof-tier-name">Gold</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Points Balance:</span>
+                            <strong style="color: #fff;" id="prof-points-balance">0 pts</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Lifetime Points:</span>
+                            <strong style="color: #34d399;" id="prof-lifetime-points">0 pts</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Points Redeemed:</span>
+                            <strong style="color: #f87171;" id="prof-points-redeemed">0 pts</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-secondary);">Member Since:</span>
+                            <strong style="color: var(--text-primary);" id="prof-created-at">-</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>🔑</span> Change Password
+                    </h3>
+
+                    <form id="change-pwd-form">
+                        <div class="form-group">
+                            <label class="form-label" for="pwd-current">Current Password *</label>
+                            <input type="password" id="pwd-current" class="form-control" required>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label" for="pwd-new">New Password *</label>
+                                <input type="password" id="pwd-new" class="form-control" minlength="6" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="pwd-confirm">Confirm Password *</label>
+                                <input type="password" id="pwd-confirm" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-block">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align: center;">
+            <p>&copy; 2026 LoyaltyHub. College Project - Customer Loyalty Points System.</p>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.requireAuth('CUSTOMER')) return;
+            const user = Auth.getUser();
+
+            try {
+                const res = await apiRequest(`/customer/profile?userId=${user.id}`);
+                if (res.success && res.data) {
+                    const u = res.data;
+                    document.getElementById('prof-name').value = u.fullName || '';
+                    document.getElementById('prof-email').value = u.email || '';
+                    document.getElementById('prof-phone').value = u.phone || '';
+                    document.getElementById('prof-city').value = u.city || '';
+                    if (u.birthDate) document.getElementById('prof-dob').value = u.birthDate;
+
+                    document.getElementById('profile-ref-code').textContent = u.referralCode || 'LOYAL-PROMO';
+                    document.getElementById('prof-points-balance').textContent = `${u.pointsBalance} pts`;
+                    document.getElementById('prof-lifetime-points').textContent = `${u.lifetimePoints} pts`;
+                    document.getElementById('prof-points-redeemed').textContent = `${u.pointsRedeemed} pts`;
+                    document.getElementById('prof-created-at').textContent = formatDate(u.createdAt);
+                }
+
+                const dashRes = await apiRequest(`/customer/dashboard?userId=${user.id}`);
+                if (dashRes.success && dashRes.data) {
+                    document.getElementById('prof-tier-name').textContent = dashRes.data.currentTier;
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+
+            // Edit Profile submit
+            document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('prof-name').value.trim();
+                const phone = document.getElementById('prof-phone').value.trim();
+                const city = document.getElementById('prof-city').value.trim();
+                const birthDate = document.getElementById('prof-dob').value;
+
+                try {
+                    const res = await apiRequest(`/customer/profile?userId=${user.id}`, 'PUT', {
+                        fullName, phone, city, birthDate
+                    });
+                    if (res.success) {
+                        showToast('Profile updated successfully!');
+                        // update cached user name
+                        const cached = Auth.getUser();
+                        cached.fullName = fullName;
+                        Auth.setUser(cached);
+                    }
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            });
+
+            // Change Password submit
+            document.getElementById('change-pwd-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const currentPassword = document.getElementById('pwd-current').value;
+                const newPassword = document.getElementById('pwd-new').value;
+                const confirmPassword = document.getElementById('pwd-confirm').value;
+
+                if (newPassword !== confirmPassword) {
+                    showToast('New passwords do not match.', 'error');
+                    return;
+                }
+
+                try {
+                    const res = await apiRequest(`/customer/change-password?userId=${user.id}`, 'POST', {
+                        currentPassword, newPassword, confirmPassword
+                    });
+                    if (res.success) {
+                        showToast('Password changed successfully!');
+                        document.getElementById('change-pwd-form').reset();
+                    }
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
+            });
+        });
+
+        function copyReferralCode() {
+            const code = document.getElementById('profile-ref-code').textContent;
+            navigator.clipboard.writeText(code);
+            showToast('Referral code copied to clipboard! 📋');
+        }
+    </script>
+</body>
+</html>

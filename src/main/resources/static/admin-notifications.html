@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Notifications - Admin Portal</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <span style="font-size: 1.5rem;">🛡️</span>
+                <div>Admin<span>Hub</span></div>
+            </div>
+
+            <ul class="admin-nav">
+                <li class="admin-nav-item"><a href="/admin-dashboard.html">📊 Overview Analytics</a></li>
+                <li class="admin-nav-item"><a href="/admin-customers.html">👥 Customer Directory</a></li>
+                <li class="admin-nav-item"><a href="/admin-products.html">🛍️ Product Catalog</a></li>
+                <li class="admin-nav-item"><a href="/admin-rewards.html">🎁 Loyalty Rewards</a></li>
+                <li class="admin-nav-item"><a href="/admin-notifications.html" class="active">📢 Broadcast Alerts</a></li>
+            </ul>
+
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <a href="/dashboard.html" class="btn btn-outline btn-block btn-sm" style="margin-bottom: 0.5rem;">⭐ Customer View</a>
+                <button type="button" class="btn btn-danger btn-block btn-sm" onclick="Auth.logout()">🚪 Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <h2 style="font-size: 1.35rem;">Customer Notification Broadcast Center</h2>
+            </header>
+
+            <div class="admin-content" style="max-width: 850px;">
+                <div class="card" style="padding: 2rem;">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Send Promotional or System Notification</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.75rem;">
+                        Deliver real-time in-app alerts to all loyalty members or a specific customer account.
+                    </p>
+
+                    <form id="broadcast-form">
+                        <div class="form-group">
+                            <label class="form-label" for="target-type">Recipient Target *</label>
+                            <select id="target-type" class="form-control" onchange="toggleTargetInput(this.value)">
+                                <option value="ALL">All Registered Customers (Broadcast)</option>
+                                <option value="SINGLE">Specific Customer ID</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="single-cust-group" style="display: none;">
+                            <label class="form-label" for="target-user-id">Customer ID *</label>
+                            <input type="number" id="target-user-id" class="form-control" placeholder="Enter customer numerical ID (e.g. 2)">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="notif-title">Notification Title *</label>
+                            <input type="text" id="notif-title" class="form-control" placeholder="e.g. 🌟 Double Points Weekend! Shop now and earn 2x points." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="notif-message">Notification Message Body *</label>
+                            <textarea id="notif-message" class="form-control" rows="4" placeholder="Enter the complete notification message details..." required></textarea>
+                        </div>
+
+                        <div style="background: rgba(99, 102, 241, 0.08); border-left: 3px solid var(--primary); padding: 0.875rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            ℹ️ Broadcast notifications appear in the customer's navigation bell icon with an unread badge indicator.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg" id="send-broadcast-btn">
+                            🚀 Dispatch Notification
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.requireAuth('ADMIN')) return;
+
+            document.getElementById('broadcast-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('send-broadcast-btn');
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+
+                const targetType = document.getElementById('target-type').value;
+                const title = document.getElementById('notif-title').value.trim();
+                const message = document.getElementById('notif-message').value.trim();
+                let userId = null;
+
+                if (targetType === 'SINGLE') {
+                    const idInput = document.getElementById('target-user-id').value;
+                    if (!idInput) {
+                        showToast('Please specify a valid Customer ID.', 'error');
+                        btn.disabled = false;
+                        btn.textContent = '🚀 Dispatch Notification';
+                        return;
+                    }
+                    userId = parseInt(idInput);
+                }
+
+                try {
+                    const res = await apiRequest('/admin/notifications/broadcast', 'POST', {
+                        userId, title, message
+                    });
+
+                    if (res.success) {
+                        showToast(res.message || 'Notification broadcasted successfully!');
+                        document.getElementById('broadcast-form').reset();
+                        toggleTargetInput('ALL');
+                    }
+                } catch (err) {
+                    showToast(err.message || 'Broadcast failed.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Dispatch Notification';
+                }
+            });
+        });
+
+        function toggleTargetInput(val) {
+            document.getElementById('single-cust-group').style.display = val === 'SINGLE' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>

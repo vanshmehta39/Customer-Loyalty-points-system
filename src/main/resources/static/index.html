@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoyaltyHub</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main>
+        <section style="padding: 4.5rem 0 3.5rem; position: relative; overflow: hidden;">
+            <div class="container" style="text-align: center; max-width: 860px;">
+                <div class="badge badge-primary" style="margin-bottom: 1.1rem;">Customer Loyalty Platform</div>
+                <h1 style="font-size: clamp(2.6rem, 5vw, 4.4rem); margin-bottom: 1.25rem; line-height: 0.98;">
+                    Shop with points that work for you.
+                </h1>
+                <p style="font-size: 1.08rem; color: var(--text-secondary); margin-bottom: 2.25rem;">
+                    Earn on every purchase, move through membership tiers, and redeem benefits when they matter most.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/dashboard.html" class="btn btn-primary btn-lg">Open Dashboard</a>
+                    <a href="/products.html" class="btn btn-secondary btn-lg">Explore Store</a>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 1rem 0 4rem;">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 0.6rem;">How it works</h2>
+                    <p style="color: var(--text-secondary);">Simple steps from purchase to reward.</p>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card" style="text-align: center; padding: 2rem 1.4rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary);">01</div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.45rem;">Shop</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Browse products and add what you need to your cart.</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; padding: 2rem 1.4rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary);">02</div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.45rem;">Earn</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Every purchase accrues loyalty points based on the configured rules.</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; padding: 2rem 1.4rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary);">03</div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.45rem;">Advance</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Move through Bronze, Silver, Gold, Platinum, and Diamond tiers.</p>
+                    </div>
+
+                    <div class="card" style="text-align: center; padding: 2rem 1.4rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary);">04</div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.45rem;">Redeem</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Use points for rewards and coupons you can actually use.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 0 0 4rem; background: rgba(255,255,255,0.25); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 2.5rem; padding-top: 3rem;">
+                    <h2 style="font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 0.6rem;">Membership tiers</h2>
+                    <p style="color: var(--text-secondary);">Progress based on your points balance.</p>
+                </div>
+
+                <div class="grid-5" id="tiers-preview-grid">
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--tier-bronze);">Bronze</div>
+                        <div style="font-size: 0.82rem; color: var(--tier-bronze); font-weight: 700;">0–199 pts</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">Basic benefits</p>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--tier-silver);">Silver</div>
+                        <div style="font-size: 0.82rem; color: var(--tier-silver); font-weight: 700;">200–499 pts</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">2% discount</p>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--tier-gold);">Gold</div>
+                        <div style="font-size: 0.82rem; color: var(--tier-gold); font-weight: 700;">500–999 pts</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">5% discount</p>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--tier-platinum);">Platinum</div>
+                        <div style="font-size: 0.82rem; color: var(--tier-platinum); font-weight: 700;">1000–1999 pts</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">8% discount</p>
+                    </div>
+
+                    <div class="card" style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--tier-diamond);">Diamond</div>
+                        <div style="font-size: 0.82rem; color: var(--tier-diamond); font-weight: 700;">2000+ pts</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.8rem;">VIP benefits</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 4rem 0;">
+            <div class="container">
+                <div class="card" style="padding: 3rem 2rem; text-align: center;">
+                    <h2 style="font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 0.8rem;">Explore the system</h2>
+                    <p style="color: var(--text-secondary); max-width: 680px; margin: 0 auto 1.8rem;">
+                        Test the shopping flow, reward redemption, tier progression, and every customer-facing activity in a polished storefront.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="/login.html" class="btn btn-primary btn-lg">Sign in</a>
+                        <a href="/admin-login.html" class="btn btn-outline btn-lg">Admin portal</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="brand-logo" style="margin-bottom: 0.85rem;">
+                        <div class="logo-icon">L</div>
+                        <div>Loyalty<span class="logo-highlight">Hub</span></div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 320px;">
+                        Customer loyalty and commerce platform built on Java Spring Boot, Spring Data JPA, and a modern storefront experience.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Customer</h4>
+                    <ul>
+                        <li><a href="/dashboard.html">Dashboard</a></li>
+                        <li><a href="/products.html">Shop</a></li>
+                        <li><a href="/rewards.html">Rewards</a></li>
+                        <li><a href="/my-rewards.html">My rewards</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Insights</h4>
+                    <ul>
+                        <li><a href="javascript:void(0)">Points flow</a></li>
+                        <li><a href="javascript:void(0)">Membership</a></li>
+                        <li><a href="javascript:void(0)">Benefits</a></li>
+                        <li><a href="javascript:void(0)">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Admin</h4>
+                    <ul>
+                        <li><a href="/admin-login.html">Admin login</a></li>
+                        <li><a href="/admin-dashboard.html">Overview</a></li>
+                        <li><a href="/admin-customers.html">Customers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 LoyaltyHub.</div>
+        </div>
+    </footer>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+</body>
+</html>

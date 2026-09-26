@@ -1,0 +1,60 @@
+# Java / Maven / Spring Boot
+/target/
+/target/**
+/bin/
+/build/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# Maven wrapper output
+.mvn/wrapper/*.jar
+.mvn/wrapper/*.properties
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local runtime / environment
+.env
+.env.*
+local.properties
+application-local.properties
+
+# Database / temp data
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+*.trace.db
+
+# Generated resources
+/generated/
+**/generated-sources/
+**/generated-test-sources/
+
+# Node / frontend caches (if added later)
+node_modules/
+.npm/
+.pnpm-store/
+
+# Coverage / reports
+coverage/
+*.lcov
+
+# Test output
+surefire-reports/
+failsafe-reports/
