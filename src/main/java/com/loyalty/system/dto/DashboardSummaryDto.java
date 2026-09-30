@@ -28,6 +28,7 @@ public class DashboardSummaryDto {
     private String nextTier;
     private Integer pointsToNextTier;
     private Integer tierProgressPercent;
+    private boolean birthdayBonusAvailable;
 
     // Collections
     private List<PointsTransaction> recentActivities;
@@ -87,6 +88,9 @@ public class DashboardSummaryDto {
 
     public Integer getTierProgressPercent() { return tierProgressPercent; }
     public void setTierProgressPercent(Integer tierProgressPercent) { this.tierProgressPercent = tierProgressPercent; }
+
+    public boolean isBirthdayBonusAvailable() { return birthdayBonusAvailable; }
+    public void setBirthdayBonusAvailable(boolean birthdayBonusAvailable) { this.birthdayBonusAvailable = birthdayBonusAvailable; }
 
     public List<PointsTransaction> getRecentActivities() { return recentActivities; }
     public void setRecentActivities(List<PointsTransaction> recentActivities) { this.recentActivities = recentActivities; }

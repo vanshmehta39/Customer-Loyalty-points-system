@@ -1,30 +1,26 @@
 # Customer Loyalty Points System
 
-A Java Spring Boot customer loyalty and e-commerce web application built for demo and learning purposes. It includes customer authentication, product browsing, cart and checkout flow, loyalty point accrual, reward redemption, membership tiers, notifications, and an admin dashboard.
+A Java Spring Boot customer loyalty and e-commerce application with authentication, product browsing, cart and checkout, loyalty points, rewards, membership tiers, notifications, and an admin dashboard.
 
 ## Tech Stack
 
 - Java 21
 - Spring Boot 3.3.4
-- Spring Web
-- Spring Data JPA
+- Spring Web and Spring Data JPA
 - Hibernate
-- H2 Database (default local development database)
-- MySQL connector support for production or custom environments
+- MySQL
 - Maven
-- Static HTML/CSS/JS frontend served from `src/main/resources/static`
+- Static HTML/CSS/JavaScript frontend served from `src/main/resources/static`
 
 ## Features
 
-- Customer sign up and login
-- Product catalog and product detail pages
-- Shopping cart and checkout flow
-- Loyalty point earning on purchases
-- Rewards and redemption flow
-- Membership tiers and loyalty statistics
-- Notifications and messaging
-- Admin overview and management screens
-- Seeded demo users for quick local testing
+- Customer registration and login
+- Product catalog, cart, and checkout
+- Loyalty point earning and reward redemption
+- Membership tiers and notifications
+- Customer and product reviews
+- Admin dashboard and management screens
+- Seeded demo users for local testing
 
 ## Demo Accounts
 
@@ -38,10 +34,11 @@ Admin:
 
 ## Run Locally
 
-From the project root:
+The application uses the local MySQL server by default and connects to the `loyalty_db` schema. Set your MySQL password in PowerShell before starting the app:
 
-```bash
-./mvnw.cmd spring-boot:run
+```powershell
+$env:SPRING_DATASOURCE_PASSWORD = 'your-mysql-password'
+.\mvnw.cmd spring-boot:run
 ```
 
 Then open:
@@ -50,26 +47,13 @@ Then open:
 - http://localhost:8080/login.html
 - http://localhost:8080/admin-login.html
 
-## Database Configuration
+## Database
 
-The project is configured to use an in-memory H2 database by default so it starts cleanly in local development environments without requiring a MySQL install.
+The datasource defaults to `jdbc:mysql://localhost:3306/loyalty_db` with username `root`. The password is read from `SPRING_DATASOURCE_PASSWORD` and is not stored in the project. Hibernate creates or updates the application tables at startup.
 
-Default configuration in `src/main/resources/application.properties`:
+In MySQL Workbench, connect to your local MySQL server, refresh the schemas, and open `loyalty_db`. Useful tables include `users`, `orders`, `order_items`, `points_transactions`, `cart`, `cart_items`, `rewards`, `redeemed_rewards`, `notifications`, and `reviews`.
 
-```properties
-spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:h2:mem:loyalty_db;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-spring.datasource.username=${SPRING_DATASOURCE_USERNAME:sa}
-spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
-```
-
-If you want to use MySQL instead, set environment variables before running the app:
-
-```bash
-set SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/loyalty_db
-set SPRING_DATASOURCE_USERNAME=root
-set SPRING_DATASOURCE_PASSWORD=your_password
-./mvnw.cmd spring-boot:run
-```
+The database files are managed by MySQL Server and are not stored in this project folder.
 
 ## Project Structure
 
@@ -84,16 +68,15 @@ set SPRING_DATASOURCE_PASSWORD=your_password
 ├── mvnw.cmd
 ├── loyalty_db.sql
 ├── README.md
-├── .gitignore
-└── target/
+└── .gitignore
 ```
 
 ## Notes
 
-- This is a UI-focused demo application with backend logic preserved.
 - Frontend pages are served from `src/main/resources/static`.
-- Build artifacts and generated files are intentionally ignored by Git.
+- Build artifacts and generated files are ignored by Git.
+- This project is intended for academic/demo use and is not published as a production-ready commercial deployment.
 
 ## License
 
-This project is intended for academic/demo use and is not published as a production-ready commercial deployment.
+This project is intended for academic/demo use.

@@ -10,4 +10,5 @@ import java.util.List;
 public interface RewardRepository extends JpaRepository<Reward, Long> {
     List<Reward> findByActiveTrueOrderByPointsRequiredAsc();
     long countByActiveTrue();
+    boolean existsByNameIgnoreCase(String name);
 }

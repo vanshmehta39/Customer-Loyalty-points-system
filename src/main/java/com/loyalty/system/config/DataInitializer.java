@@ -64,19 +64,27 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedRewards() {
-        if (rewardRepository.count() == 0) {
-            List<Reward> rewards = Arrays.asList(
-                new Reward("₹50 Discount", "Get flat ₹50 OFF on your next order total", 100, "FLAT_DISCOUNT", 50.0, "🏷️", true, 30),
-                new Reward("₹100 Discount", "Get flat ₹100 OFF on your cart value", 200, "FLAT_DISCOUNT", 100.0, "💵", true, 30),
-                new Reward("Free Delivery", "Enjoy free shipping with no minimum order threshold", 250, "FREE_DELIVERY", 0.0, "🚚", true, 30),
-                new Reward("5% Discount Coupon", "Save an extra 5% across your entire shopping cart", 300, "PERCENT_DISCOUNT", 5.0, "🎟️", true, 30),
-                new Reward("₹250 Discount", "Get flat ₹250 instant reduction on checkout", 500, "FLAT_DISCOUNT", 250.0, "🎁", true, 45),
-                new Reward("10% Discount Coupon", "Unlock a special 10% storewide checkout coupon", 600, "PERCENT_DISCOUNT", 10.0, "🌟", true, 45),
-                new Reward("Premium Gift Voucher", "Redeem for an exclusive gift hamper voucher worth ₹500", 1000, "GIFT_VOUCHER", 500.0, "🏆", true, 60),
-                new Reward("₹500 Shopping Voucher", "Huge ₹500 store voucher credited towards checkout", 1200, "FLAT_DISCOUNT", 500.0, "💳", true, 60)
-            );
-            rewardRepository.saveAll(rewards);
-            System.out.println("✅ Rewards seeded successfully.");
+        List<Reward> rewards = Arrays.asList(
+            new Reward("₹50 Discount", "Get flat ₹50 OFF on your next order total", 100, "FLAT_DISCOUNT", 50.0, "🏷️", true, 30),
+            new Reward("₹100 Discount", "Get flat ₹100 OFF on your cart value", 200, "FLAT_DISCOUNT", 100.0, "💵", true, 30),
+            new Reward("Free Delivery", "Enjoy free shipping with no minimum order threshold", 250, "FREE_DELIVERY", 0.0, "🚚", true, 30),
+            new Reward("5% Discount Coupon", "Save an extra 5% across your entire shopping cart", 300, "PERCENT_DISCOUNT", 5.0, "🎟️", true, 30),
+            new Reward("₹250 Discount", "Get flat ₹250 instant reduction on checkout", 500, "FLAT_DISCOUNT", 250.0, "🎁", true, 45),
+            new Reward("10% Discount Coupon", "Unlock a special 10% storewide checkout coupon", 600, "PERCENT_DISCOUNT", 10.0, "🌟", true, 45),
+            new Reward("Premium Gift Voucher", "Redeem for an exclusive gift hamper voucher worth ₹500", 1000, "GIFT_VOUCHER", 500.0, "🏆", true, 60),
+            new Reward("₹500 Shopping Voucher", "Huge ₹500 store voucher credited towards checkout", 1200, "FLAT_DISCOUNT", 500.0, "💳", true, 60),
+            new Reward("₹75 Cart Discount", "Take ₹75 off your next order at checkout", 150, "FLAT_DISCOUNT", 75.0, "🏷️", true, 30),
+            new Reward("₹150 Cart Discount", "Save ₹150 on your next purchase", 350, "FLAT_DISCOUNT", 150.0, "🛍️", true, 30),
+            new Reward("15% Discount Coupon", "Save 15% on your next order", 850, "PERCENT_DISCOUNT", 15.0, "%", true, 45),
+            new Reward("₹750 Shopping Voucher", "Apply ₹750 off a future purchase", 1600, "FLAT_DISCOUNT", 750.0, "🎫", true, 60),
+            new Reward("20% Discount Coupon", "Get 20% off your next order", 2000, "PERCENT_DISCOUNT", 20.0, "%", true, 60)
+        );
+        List<Reward> missingRewards = rewards.stream()
+            .filter(reward -> !rewardRepository.existsByNameIgnoreCase(reward.getName()))
+            .toList();
+        if (!missingRewards.isEmpty()) {
+            rewardRepository.saveAll(missingRewards);
+            System.out.println("✅ Added " + missingRewards.size() + " missing rewards.");
         }
     }
 

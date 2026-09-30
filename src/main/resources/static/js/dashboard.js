@@ -56,10 +56,9 @@ async function loadDashboardData(userId) {
             progressFill.style.width = '100%';
         }
 
-        // Show birthday bonus button if not claimed
         const bdayBtn = document.getElementById('birthday-btn');
         if (bdayBtn) {
-            bdayBtn.style.display = 'inline-flex';
+            bdayBtn.style.display = data.birthdayBonusAvailable ? 'inline-flex' : 'none';
         }
 
         // 4. Render Recent Activities

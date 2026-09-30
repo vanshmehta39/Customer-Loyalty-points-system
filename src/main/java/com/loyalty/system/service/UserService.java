@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -157,6 +158,7 @@ public class UserService {
         dto.setLifetimePoints(user.getLifetimePoints());
         dto.setPointsRedeemed(user.getPointsRedeemed());
         dto.setTotalSpent(user.getTotalSpent());
+        dto.setBirthdayBonusAvailable(isBirthdayBonusAvailable(user));
 
         // Membership Tier Calculations
         MembershipTier currentTier = tierService.getTierForPoints(user.getPointsBalance());
@@ -230,10 +232,31 @@ public class UserService {
     @Transactional
     public void claimBirthdayBonus(Long userId) {
         User user = getUserById(userId);
-        boolean alreadyClaimed = transactionRepository.existsByUserIdAndTransactionType(userId, "BIRTHDAY_BONUS");
-        if (alreadyClaimed) {
-            throw new IllegalArgumentException("Birthday bonus has already been claimed for this account.");
+        LocalDate today = LocalDate.now();
+        if (user.getBirthDate() == null ||
+            user.getBirthDate().getMonth() != today.getMonth() ||
+            user.getBirthDate().getDayOfMonth() != today.getDayOfMonth()) {
+            throw new IllegalArgumentException("Birthday bonus can only be claimed on your birthday.");
+        }
+        if (hasClaimedBirthdayBonusThisYear(userId, today)) {
+            throw new IllegalArgumentException("Birthday bonus has already been claimed this year.");
         }
         pointsService.awardBonus(user, birthdayBonus, "BIRTHDAY_BONUS", "🎂 Happy Birthday Bonus: +100 loyalty points!");
+    }
+
+    private boolean isBirthdayBonusAvailable(User user) {
+        LocalDate today = LocalDate.now();
+        LocalDate birthDate = user.getBirthDate();
+        return birthDate != null &&
+            birthDate.getMonth() == today.getMonth() &&
+            birthDate.getDayOfMonth() == today.getDayOfMonth() &&
+            !hasClaimedBirthdayBonusThisYear(user.getId(), today);
+    }
+
+    private boolean hasClaimedBirthdayBonusThisYear(Long userId, LocalDate today) {
+        LocalDateTime yearStart = today.withDayOfYear(1).atStartOfDay();
+        LocalDateTime nextYearStart = today.plusYears(1).withDayOfYear(1).atStartOfDay();
+        return transactionRepository.existsByUserIdAndTransactionTypeAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+            userId, "BIRTHDAY_BONUS", yearStart, nextYearStart);
     }
 }
