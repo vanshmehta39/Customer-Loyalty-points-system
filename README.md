@@ -26,14 +26,13 @@ Request flow: **Browser → REST controller → service/business logic → Sprin
 
 - JDK 21 or a compatible newer JDK
 - MySQL Server running locally
-- A MySQL account with access to the `loyalty_db` schema
+- A local MySQL database configured for the application
 
 ## Run on Windows
 
-Start MySQL, open PowerShell in the project root, set the database password for this terminal, and run Spring Boot:
+Start MySQL, configure the application's database connection locally, then open PowerShell in the project root and run Spring Boot:
 
 ```powershell
-$env:SPRING_DATASOURCE_PASSWORD = 'your-mysql-password'
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -48,18 +47,7 @@ Then visit `http://localhost:8081`.
 
 ## Database
 
-Defaults are configured in `src/main/resources/application.properties`:
-
-| Setting | Default |
-|---|---|
-| JDBC URL | `jdbc:mysql://localhost:3306/loyalty_db` |
-| Username | `root` |
-| Password | `SPRING_DATASOURCE_PASSWORD` environment variable |
-| Hibernate schema mode | `update` |
-
-Override settings with Spring environment variables such as `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD`. Do not commit database passwords.
-
-Hibernate creates or updates mapped tables at application startup. To inspect data in MySQL Workbench, connect to the same MySQL server, refresh schemas, open `loyalty_db`, and query tables such as `users`, `orders`, `order_items`, `points_transactions`, `rewards`, and `redeemed_rewards`.
+The application uses MySQL for persistent data. Its datasource settings are in `src/main/resources/application.properties`; configure the connection for your local environment without adding credentials to this README or committing them to source control. Hibernate updates mapped tables at application startup. To inspect data in MySQL Workbench, open the application's schema and query tables such as `users`, `orders`, `order_items`, `points_transactions`, `rewards`, and `redeemed_rewards`.
 
 > **Warning:** `loyalty_db.sql` is a standalone schema/seed script that drops existing tables before recreating them. Do not run it against a database whose data you need to preserve.
 
