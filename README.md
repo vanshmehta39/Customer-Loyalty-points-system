@@ -2,6 +2,17 @@
 
 A full-stack Java/Spring Boot demonstration storefront where customers shop, earn loyalty points, progress through membership tiers, and redeem rewards. An admin area supports basic customer, product, reward, and notification management.
 
+## Project Overview
+
+| Item | Description |
+|---|---|
+| Project type | Full-stack loyalty and e-commerce web application |
+| Goal | Demonstrate customer shopping, loyalty-point earning, tier progression, and reward redemption |
+| Customer flow | Register/sign in → browse products → manage cart → simulated checkout → earn points → redeem coupons |
+| Admin flow | Review customers and manage products, rewards, and notifications |
+| Architecture | Browser UI → REST API → service layer → JPA repositories → relational database |
+| Persistence | MySQL stores accounts, catalog, carts, orders, points activity, rewards, reviews, and notifications |
+
 ## Features
 
 - Customer registration, sign-in, profile, and password change
@@ -12,13 +23,20 @@ A full-stack Java/Spring Boot demonstration storefront where customers shop, ear
 - Customer notifications and product reviews
 - Admin overview, customer search, product/reward management, and notification broadcast
 
-## Technology
+## Technology Stack
 
-- Java 21, Spring Boot 3.3.4, Spring Web / MVC
-- Spring Data JPA and Hibernate for persistence
-- MySQL with MySQL Connector/J; H2 dependency is also included for explicitly configured tests
-- Static HTML, CSS, and JavaScript frontend, served by Spring Boot
-- Maven Wrapper for building and running
+| Layer | Technology | Purpose |
+|---|---|---|
+| Language | Java 21 | Backend implementation |
+| Application framework | Spring Boot 3.3.4 | Application startup and dependency configuration |
+| Web/API | Spring Web / Spring MVC | REST endpoints and static content serving |
+| Persistence API | Spring Data JPA | Repository abstraction for database access |
+| ORM | Hibernate | Maps Java entities to relational tables and executes generated SQL |
+| Database | MySQL | Persistent application data |
+| Database connectivity | MySQL Connector/J (JDBC) | JDBC driver used by Hibernate to communicate with MySQL |
+| Frontend | HTML, CSS, JavaScript | Customer and admin pages, interactions, and API requests |
+| Build | Maven Wrapper | Dependency management, compilation, and application launch |
+| Other libraries | Jakarta Validation, BCrypt, H2 | Request validation, password hashing, and optional test datasource |
 
 Request flow: **Browser → REST controller → service/business logic → Spring Data repository → Hibernate/JDBC → MySQL**.
 
@@ -50,6 +68,83 @@ Then visit `http://localhost:8081`.
 The application uses MySQL for persistent data. Its datasource settings are in `src/main/resources/application.properties`; configure the connection for your local environment without adding credentials to this README or committing them to source control. Hibernate updates mapped tables at application startup. To inspect data in MySQL Workbench, open the application's schema and query tables such as `users`, `orders`, `order_items`, `points_transactions`, `rewards`, and `redeemed_rewards`.
 
 > **Warning:** `loyalty_db.sql` is a standalone schema/seed script that drops existing tables before recreating them. Do not run it against a database whose data you need to preserve.
+
+## Entity Relationship Diagram
+
+The diagram shows the main persisted entities and their foreign-key relationships. `membership_tiers` is looked up by point balance in application logic and has no foreign key to `users`.
+
+```mermaid
+erDiagram
+    USERS ||--|| CART : owns
+    CART ||--o{ CART_ITEMS : contains
+    PRODUCTS ||--o{ CART_ITEMS : included_in
+    USERS ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : purchased_as
+    USERS ||--o{ POINTS_TRANSACTIONS : earns_or_spends
+    ORDERS o|--o{ POINTS_TRANSACTIONS : may_reference
+    USERS ||--o{ REDEEMED_REWARDS : redeems
+    REWARDS ||--o{ REDEEMED_REWARDS : issued_as
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ REVIEWS : writes
+    PRODUCTS ||--o{ REVIEWS : receives
+
+    USERS {
+        BIGINT id PK
+        VARCHAR email UK
+    }
+    MEMBERSHIP_TIERS {
+        BIGINT id PK
+        VARCHAR name UK
+    }
+    PRODUCTS {
+        BIGINT id PK
+        VARCHAR name
+    }
+    CART {
+        BIGINT id PK
+        BIGINT user_id FK,UK
+    }
+    CART_ITEMS {
+        BIGINT id PK
+        BIGINT cart_id FK
+        BIGINT product_id FK
+    }
+    ORDERS {
+        BIGINT id PK
+        VARCHAR order_number UK
+        BIGINT user_id FK
+    }
+    ORDER_ITEMS {
+        BIGINT id PK
+        BIGINT order_id FK
+        BIGINT product_id FK
+    }
+    POINTS_TRANSACTIONS {
+        BIGINT id PK
+        BIGINT user_id FK
+        BIGINT order_id FK "optional"
+    }
+    REWARDS {
+        BIGINT id PK
+        VARCHAR name
+    }
+    REDEEMED_REWARDS {
+        BIGINT id PK
+        BIGINT user_id FK
+        BIGINT reward_id FK
+        VARCHAR coupon_code UK
+    }
+    NOTIFICATIONS {
+        BIGINT id PK
+        BIGINT user_id FK
+    }
+    REVIEWS {
+        BIGINT id PK
+        BIGINT user_id FK
+        BIGINT product_id FK
+    }
+```
 
 ## Loyalty rules
 
