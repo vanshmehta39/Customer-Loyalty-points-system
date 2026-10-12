@@ -89,21 +89,34 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedProducts() {
-        if (productRepository.count() == 0) {
-            List<Product> products = Arrays.asList(
-                new Product("Sony WH-CH520 Wireless Headphones", "Electronics", "Lightweight on-ear wireless headphones with up to 50 hours battery life, multipoint connection, and customizable EQ via Headphones Connect app.", 4490.0, "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80", 4.8, 142, 45),
-                new Product("Wildcraft Multi-Pocket Backpack", "Fashion", "Ergonomic 32-liter water-resistant backpack engineered with airflow back padding, durable polyester, and laptop sleeve.", 1799.0, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80", 4.6, 88, 60),
-                new Product("boAt Wave Call Smartwatch", "Electronics", "1.69 inch HD curved display smartwatch with Bluetooth calling, 150+ watch faces, heart rate and SpO2 monitoring.", 1699.0, "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80", 4.5, 215, 80),
-                new Product("Logitech K480 Multi-Device Keyboard", "Electronics", "Versatile desk keyboard with integrated cradle stand for tablet/smartphone and easy-switch dial between 3 devices.", 2695.0, "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80", 4.7, 96, 35),
-                new Product("Decorative Ceramic Planter Set", "Home", "Handcrafted premium ceramic indoor planters with drainage hole and matching bamboo trays. Ideal for succulents and desk plants.", 899.0, "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&auto=format&fit=crop&q=80", 4.4, 46, 50),
-                new Product("Urban Classic Denim Trucker Jacket", "Fashion", "Timeless washed blue denim jacket with brass buttons, durable dual chest pockets, and relaxed regular fit.", 2499.0, "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&auto=format&fit=crop&q=80", 4.5, 64, 40),
-                new Product("Stainless Steel Smart Thermos Bottle", "Lifestyle", "Double-wall vacuum insulated 500ml water flask with LED touch temperature display on cap. Keeps beverages hot or cold for 24 hours.", 999.0, "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&auto=format&fit=crop&q=80", 4.6, 73, 90),
-                new Product("Premium Genuine Leather Bifold Wallet", "Accessories", "Handstitched full-grain leather wallet with RFID blocking layer, 8 card slots, and currency partition.", 1299.0, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&auto=format&fit=crop&q=80", 4.7, 120, 70),
-                new Product("Minimalist Nordic LED Desk Lamp", "Home", "Modern aluminum desk lamp with dimmable touch control, 3 color temperatures, and flexible gooseneck arm.", 1499.0, "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80", 4.5, 39, 45),
-                new Product("Ergonomic Memory Foam Back Cushion", "Lifestyle", "Therapeutic lumbar support pillow with breathable mesh cover for office chair and driving comfort.", 1199.0, "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&auto=format&fit=crop&q=80", 4.6, 81, 55)
-            );
-            productRepository.saveAll(products);
-            System.out.println("✅ Sample products seeded successfully.");
+        List<Product> products = Arrays.asList(
+            new Product("Sony WH-CH520 Wireless Headphones", "Electronics", "Lightweight on-ear wireless headphones with up to 50 hours battery life, multipoint connection, and customizable EQ via Headphones Connect app.", 4490.0, "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80", 4.8, 142, 45),
+            new Product("Wildcraft Multi-Pocket Backpack", "Fashion", "Ergonomic 32-liter water-resistant backpack engineered with airflow back padding, durable polyester, and laptop sleeve.", 1799.0, "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80", 4.6, 88, 60),
+            new Product("boAt Wave Call Smartwatch", "Electronics", "1.69 inch HD curved display smartwatch with Bluetooth calling, 150+ watch faces, heart rate and SpO2 monitoring.", 1699.0, "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80", 4.5, 215, 80),
+            new Product("Logitech K480 Multi-Device Keyboard", "Electronics", "Versatile desk keyboard with integrated cradle stand for tablet/smartphone and easy-switch dial between 3 devices.", 2695.0, "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80", 4.7, 96, 35),
+            new Product("Decorative Ceramic Planter Set", "Home", "Handcrafted premium ceramic indoor planters with drainage hole and matching bamboo trays. Ideal for succulents and desk plants.", 899.0, "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&auto=format&fit=crop&q=80", 4.4, 46, 50),
+            new Product("Urban Classic Denim Trucker Jacket", "Fashion", "Timeless washed blue denim jacket with brass buttons, durable dual chest pockets, and relaxed regular fit.", 2499.0, "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&auto=format&fit=crop&q=80", 4.5, 64, 40),
+            new Product("Stainless Steel Smart Thermos Bottle", "Lifestyle", "Double-wall vacuum insulated 500ml water flask with LED touch temperature display on cap. Keeps beverages hot or cold for 24 hours.", 999.0, "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&auto=format&fit=crop&q=80", 4.6, 73, 90),
+            new Product("Premium Genuine Leather Bifold Wallet", "Accessories", "Handstitched full-grain leather wallet with RFID blocking layer, 8 card slots, and currency partition.", 1299.0, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&auto=format&fit=crop&q=80", 4.7, 120, 70),
+            new Product("Minimalist Nordic LED Desk Lamp", "Home", "Modern aluminum desk lamp with dimmable touch control, 3 color temperatures, and flexible gooseneck arm.", 1499.0, "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&auto=format&fit=crop&q=80", 4.5, 39, 45),
+            new Product("Ergonomic Memory Foam Back Cushion", "Lifestyle", "Therapeutic lumbar support pillow with breathable mesh cover for office chair and driving comfort.", 1199.0, "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&auto=format&fit=crop&q=80", 4.6, 81, 55),
+            new Product("Noise-Cancelling Wireless Earbuds", "Electronics", "Compact wireless earbuds with active noise reduction, touch controls, and a pocket charging case.", 3299.0, "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=600&auto=format&fit=crop&q=80", 4.6, 0, 55),
+            new Product("Insulated Everyday Travel Mug", "Lifestyle", "Leak-resistant stainless steel travel mug with a comfortable grip and double-wall insulation.", 749.0, "https://images.unsplash.com/photo-1517256673644-36ad11246d21?w=600&auto=format&fit=crop&q=80", 4.5, 0, 75),
+            new Product("Cotton Crew-Neck T-Shirt", "Fashion", "Soft, breathable cotton T-shirt with a classic fit for everyday wear.", 699.0, "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&auto=format&fit=crop&q=80", 4.4, 0, 100),
+            new Product("Polarized Everyday Sunglasses", "Accessories", "Lightweight everyday sunglasses with polarized lenses and a protective storage case.", 1199.0, "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&auto=format&fit=crop&q=80", 4.5, 0, 40),
+            new Product("Ceramic Pour-Over Coffee Set", "Home", "Reusable ceramic pour-over dripper with a matching cup for a simple home coffee setup.", 1399.0, "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80", 4.7, 0, 30),
+            new Product("Adjustable Resistance Band Set", "Lifestyle", "Compact resistance bands with multiple tension levels and handles for at-home workouts.", 899.0, "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=600&auto=format&fit=crop&q=80", 4.4, 0, 65),
+            new Product("USB-C Multiport Adapter", "Electronics", "Portable USB-C hub with HDMI, USB-A, and card-reader ports for work or travel.", 1899.0, "https://images.unsplash.com/photo-1625842268584-8f3296236761?w=600&auto=format&fit=crop&q=80", 4.6, 0, 35),
+            new Product("Woven Cotton Cushion Cover Set", "Home", "Set of two textured cotton cushion covers with concealed zippers for a tidy finish.", 999.0, "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&auto=format&fit=crop&q=80", 4.3, 0, 50),
+            new Product("Compact RFID Travel Wallet", "Accessories", "Slim travel wallet with an RFID-blocking lining and organized passport and card storage.", 1599.0, "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&auto=format&fit=crop&q=80", 4.5, 0, 45),
+            new Product("Classic Canvas Everyday Tote", "Fashion", "Durable canvas carryall with reinforced handles and an interior pocket for daily essentials.", 849.0, "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80", 4.4, 0, 70)
+        );
+        List<Product> missingProducts = products.stream()
+            .filter(product -> !productRepository.existsByNameIgnoreCase(product.getName()))
+            .toList();
+        if (!missingProducts.isEmpty()) {
+            productRepository.saveAll(missingProducts);
+            System.out.println("✅ Added " + missingProducts.size() + " missing sample products.");
         }
     }
 
